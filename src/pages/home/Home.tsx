@@ -1,65 +1,90 @@
-import React from 'react';
-import { Link } from 'react-router';
-
-import styles from './Home.module.scss'
+// Home.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import styles from './Home.module.scss';
 import Header from '../../component/header/Header';
-import strah from '../../pic/Strah.jpg'
-import stronger from '../../pic/Stronger_(film,_2017).jpg'
-import youth from '../../pic/Youth.webp'
-import moon from '../../pic/man_on_moon.jpg'
-import phanrom from '../../pic/phantom_six.webp'
 import { getMovies } from '../../servises/kinopoisk';
 
-function Home() {
+type Movie = {
+  id: number;
+  name: string;
+  year: number;
+  rating: { kp: number };
+  poster: { url?: string; previewUrl?: string };
+}
 
-  getMovies().then(
-    (res) => {console.log(res)}
-  )
+function Home() {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const loadMovies = useCallback(async () => {
+    if (loading || !hasMore) return;
+    
+    setLoading(true);
+    try {
+      const res = await getMovies(page);
+      const newMovies = res.data.docs;
+      
+      if (newMovies.length === 0) {
+        setHasMore(false);
+      } else {
+        setMovies(prev => [...prev, ...newMovies]);
+        setPage(prev => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, loading, hasMore]);
+
+  useEffect(() => {
+    loadMovies();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >= 
+        document.documentElement.offsetHeight - 100 && 
+        !loading
+      ) {
+        loadMovies();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadMovies, loading]);
 
   return (
     <div className={styles.home_page}>
-      <Header></Header>
+      <Header />
       <div className={styles.home}>
-      
-        <Link to=":damn">
-          <div className={styles.container}>
-            <div className={styles.logo_movie}><img src={moon} alt="" className={styles.logo} /></div>
-            <div className={styles.name_movie}><h4>Человек на луне</h4></div>
-            <div className={styles.premier_date}>Дата примьеры: 11.10.23</div>
-            <div className={styles.rating}>Рейтинг: 8.3</div>
-          </div>
-        </Link>
-        <div className={styles.container}>
-          <div className={styles.logo_movie}><img src={youth} alt="" className={styles.logo} /></div>
-          <div className={styles.name_movie}><h4>Человек на луне</h4></div>
-          <div className={styles.premier_date}>Дата примьеры: 11.10.23</div>
-          <div className={styles.rating}>Рейтинг: 8.3</div>
-        </div>
-        <div className={styles.container}>
-          <div className={styles.logo_movie}><img src={phanrom} alt="" className={styles.logo} /></div>
-          <div className={styles.name_movie}><h4>Человек на луне</h4></div>
-          <div className={styles.premier_date}>Дата примьеры: 11.10.23</div>
-          <div className={styles.rating}>Рейтинг: 8.3</div>
-        </div>
-        <div className={styles.container}>
-          <div className={styles.logo_movie}><img src={stronger} alt="" className={styles.logo} /></div>
-          <div className={styles.name_movie}><h4>Человек на луне</h4></div>
-          <div className={styles.premier_date}>Дата примьеры: 11.10.23</div>
-          <div className={styles.rating}>Рейтинг: 8.3</div>
-        </div>
-        <div className={styles.container}>
-          <div className={styles.logo_movie}><img src={strah} alt="" className={styles.logo} /></div>
-          <div className={styles.name_movie}><h4>Человек на луне</h4></div>
-          <div className={styles.premier_date}>Дата примьеры: 11.10.23</div>
-          <div className={styles.rating}>Рейтинг: 8.3</div>
-        </div>
-        
+        {movies.map((movie) => (
+          <Link to={`/${movie.id}`} key={movie.id}>
+            <div className={styles.container}>
+              <div className={styles.logo_movie}>
+                <img 
+                  src={movie.poster?.previewUrl || movie.poster?.url} 
+                  alt={movie.name} 
+                  className={styles.logo} 
+                />
+              </div>
+              <div className={styles.name_movie}>
+                <h4>{movie.name}</h4>
+              </div>
+              <div className={styles.premier_date}>Год: {movie.year}</div>
+              <div className={styles.rating}>Рейтинг: {movie.rating?.kp}</div>
+            </div>
+          </Link>
+        ))}
+        {loading && <div className={styles.loading}>Загрузка...</div>}
+        {!hasMore && <div className={styles.endMessage}>Вы достигли конца списка</div>}
       </div>
     </div>
-    
-    
-    
-
   );
 }
 

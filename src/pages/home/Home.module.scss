@@ -2,6 +2,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;         // Добавлено!
+    gap: 20px;               // Отступы между карточками
+    max-width: 1600px;       // 5 карточек по 320px с отступами
+    margin: 0 auto;
 }
 .home_page{
     display: flex;
@@ -20,4 +24,18 @@
 }
 .logo{
     width: 300px;
+}
+.loading, .endMessage {
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+}
+
+.loading {
+  color: #666;
+}
+
+.endMessage {
+  color: #888;
+  font-style: italic;
 }
