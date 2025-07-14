@@ -9,7 +9,25 @@ const GENRES = [
   'драма', 'комедия', 'боевик', 'триллер', 'фантастика', 'мелодрама', 'ужасы', 'приключения', 'аниме'
 ];
 
-function Header() {
+type Movie = {
+  id: number;
+  name: string;
+  year: number;
+  rating: { kp: number };
+  poster: { url?: string; previewUrl?: string };
+  genres?: { name: string }[];
+  description?: string;
+};
+
+type HeaderProps = {
+  search: string;
+  setSearch: (value: string) => void;
+  favorites: Movie[];
+  tab: 'all' | 'favorites';
+  setTab: (tab: 'all' | 'favorites') => void;
+};
+
+function Header({ search, setSearch, favorites, tab, setTab }: HeaderProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Жанры
@@ -53,6 +71,20 @@ function Header() {
       <div className={styles.left}>
         <img src={logo_vk} alt="logo" className={styles.logo} />
         <h1>MOVIE</h1>
+      </div>
+      <div className={styles.tabs}>
+        <Button
+          variant={tab === 'all' ? 'contained' : 'outlined'}
+          onClick={() => setTab('all')}
+        >
+          Все фильмы
+        </Button>
+        <Button
+          variant={tab === 'favorites' ? 'contained' : 'outlined'}
+          onClick={() => setTab('favorites')}
+        >
+          Избранное ({favorites.length})
+        </Button>
       </div>
       <div className={styles.filters}>
         {/* Жанры */}
@@ -110,7 +142,13 @@ function Header() {
         </FormControl>
       </div>
       <div className={styles['input-container']}>
-        <input type="text" id="input" placeholder=" " />
+        <input
+          type="text"
+          id="input"
+          placeholder=" "
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
         <label htmlFor="input" className={styles.label}>Поиск фильмов...</label>
         <div className={styles.underline}></div>
       </div>

@@ -20,7 +20,6 @@ function DetilsPage() {
   const [movie, setMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
-    // Можно сделать отдельный getMovieById, но для примера ищем в списке
     getMovies().then((res) => {
       const found = res.data.docs.find((m: Movie) => String(m.id) === id);
       setMovie(found);
