@@ -4,4 +4,8 @@ export { default as MenuItem } from '@mui/material/MenuItem';
 export { default as FormHelperText } from '@mui/material/FormHelperText';
 export { default as FormControl } from '@mui/material/FormControl';
 export { default as Select } from '@mui/material/Select';
+export { default as Slider } from '@mui/material/Slider';
+export { default as OutlinedInput } from '@mui/material/OutlinedInput';
+export { default as Box } from '@mui/material/Box';
+export { default as Chip } from '@mui/material/Chip';
 export type { SelectChangeEvent } from '@mui/material/Select';

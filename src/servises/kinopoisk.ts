@@ -10,7 +10,7 @@ export const getMovies = (page: number = 1) => {
                 'id', 'name', 'year', 'rating', 
                 'poster', 'genres', 'description'
             ],
-            notNullFields: ['name', 'poster.url', 'description'],
+            notNullFields:'poster.url',
             'rating.kp': '0.1-10'
         }
     });
